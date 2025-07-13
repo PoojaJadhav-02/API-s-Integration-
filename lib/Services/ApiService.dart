@@ -773,17 +773,89 @@ class ApiService{
   }
 
 
+  // Future<void> createProductData({
+  //   required String title,
+  //   required String description,
+  //   required int price,
+  //   required String categoryId,
+  //   required String subCategoryId,
+  //   // required String subSubCategoryId,
+  //   required List<String> subSubCategoryId, // changed from String to List<String>
+  //
+  // }) async {
+  //
+  //   String url = "${ApiEndPoints.baseUrl}${ApiEndPoints.authEndPoints.PostCreateData}";
+  //   print('Create Post: $url');
+  //
+  //   final token = AuthStorage.getToken();
+  //
+  //   if (token == null || token.isEmpty) {
+  //     print('Token is missing');
+  //     return null;
+  //   }
+  //
+  //   // Prepare the dynamic request data
+  //   Map<String, dynamic> requestBody = {
+  //     "title": title,
+  //     "description": description,
+  //     "price": price,
+  //     "category": categoryId,
+  //     "subCategory": subCategoryId,
+  //     // "subSubCategory": subSubCategoryId
+  //     "subSubCategory": subSubCategoryId, // keep as array
+  //
+  //   };
+  //
+  //   try {
+  //     final response = await dio.post(
+  //       url,
+  //       data: requestBody,
+  //       options: Options(
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //            "Authorization": "Bearer $token"
+  //         },
+  //       ),
+  //     );
+  //
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       var resData = response.data;
+  //
+  //       if (resData['success'] == true) {
+  //         var product = resData['product']; // or resData['data']
+  //
+  //         print("✅ Product Created:");
+  //         debugPrint("✅ Product created: ${response.data}");
+  //         print("ID: ${product['_id']}");
+  //         print("Title: ${product['title']}");
+  //         print("Price: ${product['price']}");
+  //         print("Created At: ${product['createdAt']}");
+  //       } else {
+  //         print("❌ API Error: ${resData['message']}");
+  //       }
+  //     } else {
+  //       print("❌ Failed with status code: ${response.statusCode}");
+  //     }
+  //   } on DioException catch (e) {
+  //     if (e.response != null) {
+  //       print("❌ Dio Error Responseee: ${e.response?.data}");
+  //     } else {
+  //       print("❌ Dio Error: ${e.message}");
+  //     }
+  //   } catch (e) {
+  //     print("❌ Unexpected Error: $e");
+  //   }
+  // }
+
   Future<void> createProductData({
     required String title,
     required String description,
     required int price,
     required String categoryId,
     required String subCategoryId,
-    // required String subSubCategoryId,
-    required List<String> subSubCategoryId, // changed from String to List<String>
-
+    required List<String> subSubCategoryId,
+    required String imageUrl, // 👈 Add image URL
   }) async {
-
     String url = "${ApiEndPoints.baseUrl}${ApiEndPoints.authEndPoints.PostCreateData}";
     print('Create Post: $url');
 
@@ -791,19 +863,18 @@ class ApiService{
 
     if (token == null || token.isEmpty) {
       print('Token is missing');
-      return null;
+      return;
     }
 
-    // Prepare the dynamic request data
+    // Prepare the request body
     Map<String, dynamic> requestBody = {
       "title": title,
       "description": description,
       "price": price,
       "category": categoryId,
       "subCategory": subCategoryId,
-      // "subSubCategory": subSubCategoryId
-      "subSubCategory": subSubCategoryId, // keep as array
-
+      "subSubCategory": subSubCategoryId, // array
+      "image": imageUrl, // 👈 Send image URL here
     };
 
     try {
@@ -813,7 +884,7 @@ class ApiService{
         options: Options(
           headers: {
             "Content-Type": "application/json",
-             "Authorization": "Bearer $token"
+            "Authorization": "Bearer $token",
           },
         ),
       );
@@ -822,8 +893,7 @@ class ApiService{
         var resData = response.data;
 
         if (resData['success'] == true) {
-          var product = resData['product']; // or resData['data']
-
+          var product = resData['product'];
           print("✅ Product Created:");
           debugPrint("✅ Product created: ${response.data}");
           print("ID: ${product['_id']}");
@@ -846,7 +916,6 @@ class ApiService{
       print("❌ Unexpected Error: $e");
     }
   }
-
 
 
   Future<List<Map<String, dynamic>>> fetchSubCategories(String categoryId) async {
